@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Laravel Server Test</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .success { color: green; }
+        .error { color: red; }
+        button { padding: 10px 20px; margin: 10px 0; font-size: 16px; }
+        #result { margin-top: 20px; padding: 10px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>Laravel Server Test</h1>
+    <p>Server IP: <strong>192.168.143.57:8000</strong></p>
+    
+    <button onclick="testAPI()">Test API Connection</button>
+    <button onclick="testRegister()">Test Register Endpoint</button>
+    
+    <div id="result"></div>
+
+    <script>
+        async function testAPI() {
+            const result = document.getElementById('result');
+            result.innerHTML = 'Testing API connection...';
+            
+            try {
+                const response = await fetch('/api/test');
+                const data = await response.json();
+                result.innerHTML = `<div class="success">
+                    <h3>✅ API Connection Successful!</h3>
+                    <p>Status: ${response.status}</p>
+                    <p>Message: ${data.message}</p>
+                    <p>Timestamp: ${data.timestamp}</p>
+                </div>`;
+            } catch (error) {
+                result.innerHTML = `<div class="error">
+                    <h3>❌ API Connection Failed</h3>
+                    <p>Error: ${error.message}</p>
+                </div>`;
+            }
+        }
+
+        async function testRegister() {
+            const result = document.getElementById('result');
+            result.innerHTML = 'Testing register endpoint...';
+            
+            const testData = {
+                name: 'Test User',
+                email: 'test@example.com',
+                password: '123456',
+                cedula: '1234567890',
+                genero: 'masculino',
+                telefono: '0987654321',
+                fecha_nacimiento: '1990-01-01',
+                direccion: 'Test Address',
+                ciudad: 'Quito',
+                pais: 'Ecuador'
+            };
+            
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify(testData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    result.innerHTML = `<div class="success">
+                        <h3>✅ Register Endpoint Working!</h3>
+                        <p>Status: ${response.status}</p>
+                        <p>Message: ${data.message}</p>
+                    </div>`;
+                } else {
+                    result.innerHTML = `<div class="error">
+                        <h3>⚠️ Register Endpoint Error</h3>
+                        <p>Status: ${response.status}</p>
+                        <p>Message: ${data.message || 'Unknown error'}</p>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>`;
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="error">
+                    <h3>❌ Register Endpoint Failed</h3>
+                    <p>Error: ${error.message}</p>
+                </div>`;
+            }
+        }
+    </script>
+</body>
+</html>
